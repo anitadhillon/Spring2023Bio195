@@ -1,0 +1,87 @@
+---
+title: "Portal Data Set"
+author: "Anita Dhillon"
+date: "2023-03-02"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+# Introduction to Data Set
+
+HW: location/parameters of experiment
+
+```{r}
+surveys <- read.csv(file="../data-raw/surveys.csv")
+head(surveys)
+species <- read.csv(file = "../data-raw/species.csv")
+head(species)
+plots <- read.csv(file="../data-raw/plots.csv")
+head(plots)
+```
+
+```{r}
+select(surveys, year, month, day)
+head(surveys)
+
+mutate(surveys, hindfoot_length_cm = hindfoot_length / 10)
+head(surveys)
+```
+
+```{r}
+surveys_plus <- mutate(surveys,
+                       hindfoot_length_cm = hindfoot_length / 10)
+arrange(surveys, weight)
+arrange(surveys, plot_id, year, month, day)
+head(surveys)
+arrange(surveys, desc(weight))
+```
+
+```{r}
+filter(surveys, species_id == "DS")
+filter(surveys, species_id == "DS", year > 1995)
+filter(surveys, species_id == "DS" & year > 1995)
+filter(surveys, species_id == "DS" | species_id == "DM" | species_id == "DO")
+filter(surveys, weight != NA)
+```
+
+```{r}
+is.na(NA)
+is.na(3)
+is.na(surveys$weight)
+filter(surveys, is.na(weight))
+filter(surveys, species_id == "DS", !is.na(weight))
+```
+
+
+```{r}
+surveys2_subset <- select(year, species_id, weight)
+
+
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+```{r}
+
+```
