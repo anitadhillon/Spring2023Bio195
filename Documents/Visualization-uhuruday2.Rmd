@@ -112,8 +112,7 @@ labs(x ="Tree Height", y = "Tree Axis 1", title = "Acacia Trees Size Relationshi
 colors()
 ```
 
-
-### Rescaling Axes 
+### Rescaling Axes
 
 ```{r}
 library(ggplot2)
@@ -185,14 +184,15 @@ ggplot() +
 We can also plot categorical and continous data on the same plot
 
 ```{r}
+library(ggplot2)
 ggplot() +
 geom_point(data = acacia,
            mapping = aes(x = HEIGHT, y = FRUITS,
                          color = TREATMENT)) +
 geom_smooth(data = acacia,
-            mapping = aes(x = HEIGHT, y = FRUITS)) +
+            mapping = aes(x = HEIGHT, y = FRUITS)) 
 geom_histogram(data = acacia,
-               mapping = aes(x = HEIGHT, color = TREATMENT),
+               mapping = aes(x = HEIGHT, color = TREATMENT), 
                alpha = 0.1)
 ```
 
@@ -209,5 +209,3 @@ This argument can change the size of image in inches
 ```{r}
 ggsave("acacia_by_treatment.pdf", height = 5, width = 5)
 ```
-
-

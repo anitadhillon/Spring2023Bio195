@@ -125,4 +125,14 @@ surveys2_filtered <- filter(surveys2, species_id == "SH")
 str(surveys2_filtered)
 ```
 
+### Excercise 2
+
+```{r}
+surveys2 <- select(surveys, year ,species_id, weight) |>
+mutate(weight_kg = weight/1000) |>
+filter(!is.na(weight_kg)) |>
+filter(species_id == "SH")
+str(surveys2)
+```
+
 

@@ -3,7 +3,7 @@ title: "UHURU Data set visualization"
 author: "Anita Dhillon"
 date: "2023-02-23"
 output:
-  html_document:
+  pdf_document:
     df_print: paged
 ---
 
@@ -124,4 +124,99 @@ labs(x ="Tree Height", y = "Tree Axis 1", title = "Acacia Trees Size Relationshi
 
 ```{r}
 colors()
+```
+
+```{r}
+library(ggplot2)
+ggplot(data = acacia, mapping = aes(x = CIRC, y = HEIGHT)) +
+  geom_point(size = 3, color = "blue", alpha = 0.5) + 
+  scale_y_log10() +
+  scale_x_log10()
+```
+
+### Fitting Linear Models
+
+the geom_smooth() function allows finding trends in our data
+
+```{r}
+ggplot(acacia, aes(x = CIRC, y = HEIGHT, color = TREATMENT, linetype = TREATMENT)) +
+  geom_point(size = 3, alpha = 0.5) + 
+  geom_smooth(method = "lm") # try with "glm"
+```
+
+### Data Distribution: Histograms and bar plots
+
+The function geom_bar() created bar plots and can be used for categoric or discrete variables
+
+The function geom_histogram() creates histpograms and can only be used for continous variables
+
+This code is creating a bar plot of the number of plants for each treatment:
+
+```{r}
+ggplot(data = acacia, mapping =aes(x = TREATMENT)) +
+  geom_bar()
+```
+
+This code shows the distribution of circumference values with red colored bars
+
+```{r}
+ggplot(acacia, aes(x=CIRC)) +
+  geom_histogram(fill = "red")
+```
+
+This code will show the proportion of datqa colored by treatment
+
+The "bins =" arguments defines the number of bins "Fill =" arugments aloows the defining color inside the bars
+
+```{r}
+ggplot(acacia, aes(x = CIRC, color = TREATMENT)) +
+  geom_histogram(bins = 20)
+```
+
+We can use the treatmenet data to assigna fill color with a gray outline
+
+```{r}
+ggplot (acacia, aes(x = CIRC, fill = TREATMENT)) +
+  geom_histogram(bins = 20, color = "gray")
+```
+
+### Layering Multiple Data
+
+To plot different data or variables on the same plot, we can change these values across layers
+
+```{r}
+ggplot() + 
+  geom_point(data = acacia,
+             mapping =aes(x = CIRC, y = HEIGHT,
+                          color = TREATMENT)) +
+  geom_smooth(data = acacia,
+              mapping = aes(x = CIRC, y = HEIGHT))
+```
+
+We can also plot categorical and continous data on the same plot
+
+```{r}
+ggplot() +
+geom_point(data = acacia,
+           mapping = aes(x = CIRC, y = HEIGHT,
+                         color = TREATMENT)) +
+geom_smooth(data = acacia,
+            mapping = aes(x = CIRC, y = HEIGHT)) +
+geom_histogram(data = acacia,
+               mapping = aes(x = CIRC, color = TREATMENT),
+               alpha = 0.1)
+```
+
+### Saving Plots as Image Files
+
+using the function ggsave() filename = is included as the main argument this indicates the path where the image is saved the name we want to give the saved image the type of file we will save it as
+
+```{r}
+ggsave("acacia_by_treatment.jpg")
+```
+
+This argument can change the size of image in inches
+
+```{r}
+ggsave("acacia_by_treatment.pdf", height = 5, width = 5)
 ```
