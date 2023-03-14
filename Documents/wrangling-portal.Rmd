@@ -75,7 +75,7 @@ surveys2_subset <- select(year, species_id, weight)
 
 
 ```{r}
-
+read_csv(survey.csv)
 ```
 
 

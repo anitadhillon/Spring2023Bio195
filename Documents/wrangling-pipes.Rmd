@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(magrittr)
+library(readr)
 ```
 
 ## The classic way of running code
@@ -134,5 +135,95 @@ filter(!is.na(weight_kg)) |>
 filter(species_id == "SH")
 str(surveys2)
 ```
+```{r}
+ds_data <- filter(surveys, species_id == "DS", !is.na(weight))
+ds_data_by_year <- arrange(ds_data, year)
+ds_weight_by_year <- select(ds_data_by_year, year, weight)
+str(ds_weight_by_year)
+```
+
+
+
+```{r}
+ds_data <- filter(surveys,
+                  species_id == "DS",
+                  !is.na(weight))
+ds_data_by_year <- arrange(ds_data, year)
+ds_weight_by_year <- select(ds_data_by_year,
+                            year,
+                            weight)
+```
+
+
+### Exercise 4
+
+```{r}
+surveys_DS <- filter(surveys, species_id == "DS", !is.na(weight))
+surveys_DS_lm <- lm(weight ~ year, data = surveys_DS)
+summary(surveys_DS_lm)
+```
+
+## In Class Activity- (3/9/23) ~Missed
+
+## Data Grouping/ Aggregation 
+- groups data into variables so that manipulation can be done easily
+
+```{r}
+group_by(surveys, year)
+group_by(surveys, plot_id, year)
+```
+
+
+```{r}
+surveys_by_year <- group_by(surveys, year)
+year_counts <- summarize(surveys_by_year, abundance = n())
+str(year_counts)
+```
+
+```{r}
+surveys_by_plot_year <- group_by(surveys, plot_id, year)
+plot_year_counts <- summarise(surveys_by_plot_year, abundance = n())
+str(plot_year_counts)
+```
+
+```{r}
+surveys |>
+  group_by(plot_id, year) |>
+  summarize(abundance = n(), avg_weight = mean(weight))
+mean(surveys$weight, na.rm = TRUE)
+
+```
+
+```{r}
+surveys |>
+group_by(plot_id, year) |>
+summarize(abundance = n(),
+          avg_weight = mean(weight, na.rm = TRUE))
+surveys |>
+  group_by(plot_id, year) |>
+  summarize(abundance = n(),
+            avg_weight = mean(weight, na.rm = TRUE)) |>
+  filter(!is.na(avg_weight))
+```
+
+
+
+
+## Exercise 6 
+
+```{r}
+shrub_data <- read_csv("../Data-raw/shrub-volume-data.csv")
+select(shrub_data, length) 
+select(shrub_data, site, experiment)
+mutate(shrub_data, area = length*width)
+arrange(shrub_data,length)
+filter(shrub_data, height > 5)
+filter(shrub_data,height > 5 & width > 2)
+filter(shrub_data, experiment == 1 | experiment == 3)
+shrub_volumes <- mutate(shrub_data, volume = height*width*length)
+```
+
+
+
 
 
