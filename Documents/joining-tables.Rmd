@@ -160,8 +160,29 @@ inner_join(surveys, species, by = "species_id") %>%
 
 ## HOMEWORK (3/13/2023)
 
-```{r}
+##Exercise 4
+Create a data frame 
+with the average "hindfoot_length" - I should use the mean function and apply it to hindfoot length for each "species_id_ in each "year" with no null values 
 
+```{r}
+surveys %>% 
+  filter(is.na(hindfoot_length)) %>% 
+group_by(species_id , year) %>% 
+  summarize(mean(hindfoot_length, na.rm = TRUE))
+```
+
+
+
+
+
+##Exercise 5
+```{r}
+inner_join(surveys, species, by = "species_id") %>% 
+  inner_join(plots, by = "plot_id") %>% 
+  select(month, day, year, species_id, weight, hindfoot_length) %>%
+  filter(is.na(weight)) %>% 
+  arrange(species_id,desc(weight)) %>% 
+  head()
 ```
 
 
