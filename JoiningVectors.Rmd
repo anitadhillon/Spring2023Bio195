@@ -1,0 +1,162 @@
+---
+title: "Joining Vectors"
+author: "Anita Dhillon"
+date: "2023-03-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(readr)
+library(magrittr)
+```
+
+## What are vectors ?
+ 
+- They are undimensional matrices
+- they can only hold one type of data, either numeric (integer or double), character, or logical (complex numbers)
+- it can hold any type of data
+- it can only hold different types of data in a certain way: 
+  - only columns can have different data types
+  - within a coulmn, all rows must have the same data type 
+  
+  - A data frame can also be identified as a collection of vectors (they can be different or the same type)
+  
+  
+
+  
+```{r}
+surveys <- read.csv(file = "./data-raw/surveys.csv")
+str(surveys)
+```
+     
+## Creating vectors -review
+
+A character bector with the function 'c'()
+```{r}
+c("luna", "Avi", "Anita" , "James", "Charles", "Damian", "Davinder") -> our_names
+str(our_names)
+1:7 # the colon operator creates a vector of numbers 
+1:7 -> my_numbers
+-100:200
+```
+     
+In how many steps or units does the colon operator increase? In increases in a step of 1
+
+What do we do if I want to create a nummeric sequence that increases in steps different than 1? 
+?seq
+
+```{r}
+seq(-100,200, by =0.1) ->my_numbers
+str(my_numbers)
+```
+ 
+ 
+```{r} 
+letters
+LETTERS
+```
+## Creating data frames with vectors  
+
+The most general way to do this is with the function 'data.frame()':
+
+```{r error=TRUE} 
+data.frame(names = our_names,numbers = my_numbers)
+```
+
+Remeber yectors must have the same length to be part of a data frame:
+
+```{r}
+data.frame(names=our_names, numbers = 1:7)
+```
+     
+     
+Even though we cant use vectors that are larger to create a data frame, we can use vector that are shorter, and R will recycle the values: 
+
+```{r}
+data.frame(names = our_names,numbers =1)
+```
+     
+To recycle the values of a numeric vector length 2, we have to repeat the vector of names two times so it is a multiple of 2: 
+
+```{r}
+data.frame(names = rep(our_names, 2), numbers = c(2, 5.5))
+```
+
+
+
+## Exercise 6
+
+```{r}
+length <- c(2.2, 2.1, 2.7, 3.0, 3.1, 2.5, 1.9, 1.1, 3.5, 2.9)
+width <- c(1.3, 2.2, 1.5, 4.5, 3.1, NA, 1.8, 0.5, 2.0, 2.7)
+height <- c(9.6, 7.6, 2.2, 1.5, 4.0, 3.0, 4.5, 2.3, 7.5, 3.2)
+```     
+     
+  
+```{r} 
+data.frame(length,width,height) -> table
+table$genus <- "Taxus"
+table$species <- "baccata"
+str(table)
+table
+```
+  
+  
+###Extracting/accessing values from vectors and data frames
+
+```{r}
+surveys <- read.csv(file = "./data-raw/surveys.csv")
+str(surveys)
+```  
+
+
+```{r}
+surveys$record_id -> record_id
+```  
+  
+  
+Another way is with the square brackets '[]'
+
+```{r}
+surveys[1:10,"hindfoot_length"]
+```
+
+If i want all the values from the rows of column hindfoot length
+
+```{r}
+surveys[ , "hindfoot_length" ] -> hindfoot_length 
+head(hindfoot_length)
+
+```
+
+
+Another way is using double square brackets 
+
+```{r}
+surveys[["record_id"]] %>% 
+  head()
+```
+
+### Exercise 7
+
+```{r}
+surveys$weight -> surveys_weight
+surveys["month"] -> surveys_month
+head(surveys_weight)
+```
+
+
+
+```{r}
+surveys[,"hindfoot_length"] %>% 
+head()
+mean(surveys$hindfoot_length,na.rm = TRUE) %>% 
+head()
+```
+
+
+
+
+
