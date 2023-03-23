@@ -1,0 +1,61 @@
+---
+title: "FunctionHw(3/21)"
+author: "Anita Dhillon"
+date: "2023-03-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+library(readr)
+library(ggplot2)
+```
+
+### Function for the Portal Data Set
+
+```{r}
+surveys <-read.csv(file = "../data-raw/surveys.csv")
+species <-read.csv(file = "../data-raw/species.csv")
+plots <- read.csv(file = "../data-raw/plots.csv")
+intersect(colnames(surveys), colnames(species))
+```
+
+
+```{r}
+a = inner_join(surveys, species, by = "species_id")
+head(a)
+```
+
+```{r}
+my_function <- function(a, genus_name = "Dipodomys", species_name = "merriami") {
+  a %>% 
+  group_by(year) %>% 
+  filter(genus == genus_name | species == species_name) %>% 
+  summarize(count = n()) -> output
+  return(output) 
+}
+my_function(a = a)
+```
+
+
+```{r}
+my_function(a =a) %>% 
+  ggplot(mapping = aes(x = year, y = count)) +
+  geom_line(color = "pink") 
+```
+
+```{r}
+my_function(a = a, "Chaetodipus", "penicillatus") %>% 
+  ggplot(mapping = aes(x = year, y = count)) +
+  geom_point(size = 1, color = "yellow" ) +
+  geom_line(size = 2, color = "red") +
+  labs(x = "year", y = "Number of Individuals")
+```
+
+
+
+
+
+
