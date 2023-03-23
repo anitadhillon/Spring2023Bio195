@@ -1,0 +1,102 @@
+---
+title: "WritingFunctions"
+author: "Anita Dhillon"
+date: "2023-03-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+library(readr)
+```
+
+
+
+1. Copy the following function into an R chunk of your Rmd file and replace the spaces ________ with variables names for the input and output. 
+```{r}
+red <- 3.75
+yellow <- 453.6
+convert_pounds_to_grams <- function(pounds) {
+     grams = 453.6 * pounds
+     return(grams)
+ }
+```
+
+
+
+Use the function to calculate how many grams there are in 3.75 pounds.
+
+```{r}
+ convert_pounds_to_grams(pounds = 10)
+```
+
+```{r}
+get_mass_from_length_theropoda <- function(length, a, b)
+{mass <- a * length ^ b
+return (mass)}
+```
+
+
+
+```{r}
+a = 214.44
+b = 1.46
+length <- 26
+get_mass_from_length_theropoda(length = 26, a =214.44, b = 1.46)
+```
+
+
+## Why do we use functions in coding?
+- reduces the amount of code we write
+- no need to repeat codes
+- helps with reproductibility
+- organization 
+
+```{r}
+get_mass_from_length_theropoda(length = 26, a =214.44, b = 1.46)
+```
+
+## Combining Functions exercise
+
+```{r}
+kg = 5
+convert_kg_to_pounds <- function(kg= 5) {
+  pounds = 2.205 * kg
+  return(pounds)
+}
+```
+
+
+```{r}
+convert_kg_to_pounds(kg = 5)
+```
+
+```{r}
+convert_kg_to_pounds(50)
+```
+
+```{r}
+get_mass_from_length <- function(length, a, b)
+{mass <- a * length ^ b
+return (mass)}
+a = 10.95
+b = 2.64
+length <- 12
+get_mass_from_length(a = 10.95, b = 2.64,length =12) %>%  
+  convert_kg_to_pounds()
+```
+
+
+```{r}
+length_in_pounds <- function(length, a, b){
+  get_mass_from_length(length = length, a = 10.95, b = 2.64) %>% 
+  convert_kg_to_pounds()
+}
+get_mass_from_length(length = 12, a = 10.95, b = 2.64)
+```
+
+```{r}
+length_in_pounds(length = 35, a = 13, b = 1.3)
+```

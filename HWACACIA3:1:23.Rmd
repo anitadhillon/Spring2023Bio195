@@ -1,0 +1,75 @@
+---
+title: "AcaciaVTree"
+author: "Anita Dhillon"
+date: "2023-03-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(ggplot2)
+```
+
+## R Markdown
+
+```{r}
+trees <- read_tsv("./Data-raw/TREE_SURVEYS.txt",
+               col_types = list(HEIGHT = col_double(),
+                                AXIS_2 = col_double()))
+```
+
+```{r}
+trees$canopy_area <- trees$AXIS_1 * trees$AXIS_2
+head(trees)
+```
+
+```{r}
+subset(trees, select =c(SURVEY, YEAR , SITE, canopy_area))
+data.frame(SURVEY = trees$SURVEY,
+           YEAR = trees$YEAR,
+           SITE = trees$SITE,
+           canopy_area = trees$canopy_area)
+trees2 <- trees[,c("SURVEY","YEAR", "SITE", "canopy_area")]
+```
+
+```{r}
+ggplot(data = trees, mapping = aes(x = canopy_area, y = HEIGHT, Color = TREATMENT)) +
+  geom_point() +
+  labs(x = "Canopy area") +
+  facet_wrap(~SPECIES)
+```
+
+```{r}
+trees3 <- subset(trees, canopy_area <= 400)
+ggplot(data = trees3, mapping = aes(x = canopy_area, y = HEIGHT, color = TREATMENT))+
+ geom_point() +
+  facet_wrap(~SPECIES)
+which(trees$canopy_area > 2000)
+trees4 <- trees[-3839,]
+         
+```
+
+
+```{r}
+which(trees$canopy_area > 2000)
+
+```
+
+```{r}
+ggplot(data = trees4, mapping = aes(x = canopy_area, y = HEIGHT, color = TREATMENT))+
+ geom_point() +
+  facet_wrap(~SPECIES)
+```
+
+
+
+
+
+
+
+
+
+
+
+
