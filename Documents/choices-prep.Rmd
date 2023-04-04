@@ -1,0 +1,12 @@
+---
+title: "ChoicesPrep"
+author: "Anita Dhillon"
+date: "2023-03-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Making choices inside R functions
