@@ -1,0 +1,325 @@
+---
+title: "Phylogenetic Trees"
+author: "Anita Dhillon"
+date: "2023-04-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(dplyr)
+library(magrittr)
+library(stats)
+library(ade4)
+library(ape)
+library(adegenet)
+library(phangorn)
+```
+
+
+
+### Phylogentic Trees 
+
+```{r}
+dna <- fasta2DNAbin(file="http://adegenet.r-forge.r-project.org/files/usflu.fasta")
+```
+
+```{r}
+dna
+```
+
+
+
+```{r}
+annot <- read.csv("http://adegenet.r-forge.r-project.org/files/usflu.annot.csv", header=TRUE, row.names=1)
+annot
+```
+
+## Step 1 
+
+```{r}
+library(ape)
+D <- dist.dna(dna, model = "TN93")
+length(D)
+```
+
+
+```{r}
+temp <- as.data.frame(as.matrix(D))
+table.paint(temp, cleg=0, clabel.row=.5, clabel.col=.5)
+```
+
+
+## Step 2
+
+```{r}
+tre <- nj(D)
+class(tre) 
+```
+
+```{r}
+tre <- ladderize(tre)
+tre 
+```
+
+```{r}
+plot(tre, cex = 0.6)
+title("A Simple NJ Tree")
+```
+
+
+OR 
+
+```{r}
+h_cluster <- hclust(D, method = "average", members = NULL)
+plot(h_cluster, cex = 0.6)
+```
+
+
+
+### We can use different colors to represent different years.
+
+```{r}
+plot(tre, show.tip=FALSE)
+title("Unrooted NJ tree")
+myPal <- colorRampPalette(c("red","yellow","green","blue"))
+tiplabels(annot$year, bg=num2col(annot$year, col.pal=myPal), cex=.5)
+temp <- pretty(1993:2008, 5)
+legend("bottomleft", fill=num2col(temp, col.pal=myPal), leg=temp, ncol=2)
+```
+
+
+
+###
+
+```{r}
+plot(tre, type = "unrooted", show.tip = FALSE)
+title("Unrooted NJ Tree")
+tiplabels(tre$tip.label, bg = num2col(annot$year, col.pal = myPal), cex = 0.5)
+```
+
+```{r}
+head(annot)
+```
+
+```{r}
+tre2 <- root(tre, out = 1)
+tre2 <- ladderize(tre2)
+plot(tre2, show.tip=FALSE, edge.width=2)
+title("Rooted NJ tree")
+tiplabels(tre$tip.label, bg=transp(num2col(annot$year, col.pal=myPal),.7), cex=.5, fg="transparent")
+axisPhylo()
+temp <- pretty(1993:2008, 5)
+legend("topright", fill=transp(num2col(temp, col.pal=myPal),.7), leg=temp, ncol=2)
+```
+
+
+## Step 3
+
+```{r}
+x <- as.vector(D)
+y <- as.vector(as.dist(cophenetic(tre2)))
+plot(x, y, xlab="original pairwise distances", ylab="pairwise distances on the tree", main="Is NJ appropriate?", pch=20, col=transp("black",.1), cex=3)
+abline(lm(y~x), col="red")
+```
+
+```{r}
+cor(x,y)^2
+```
+
+
+```{r}
+tre3 <- as.phylo(hclust(D,method="average"))
+y <- as.vector(as.dist(cophenetic(tre3)))
+plot(x, y, xlab="original pairwise distances", ylab="pairwise distances on the tree", main="Is UPGMA appropriate?", pch=20, col=transp("black",.1), cex=3)
+abline(lm(y~x), col="red")
+```
+
+```{r}
+cor(x,y)^2
+```
+
+```{r}
+plot(tre3, cex=.5)
+title("UPGMA tree")
+```
+
+
+## Bootstrapping
+
+```{r}
+myBoots <- boot.phylo(tre2, dna, function(e) root(nj(dist.dna(e, model = "TN93")),1))
+```
+
+
+```{r}
+myBoots
+```
+
+```{r}
+plot(tre2, show.tip=FALSE, edge.width=2)
+title("NJ tree + bootstrap values")
+tiplabels(frame="none", pch=20, col=transp(num2col(annot$year, col.pal=myPal),.7), cex=3, fg="transparent")
+16
+```
+
+
+```{r}#
+axisPhylo()
+temp <- pretty(1993:2008, 5)
+legend("topright", fill=transp(num2col(temp, col.pal=myPal),.7), leg=temp, ncol=2)
+nodelabels(myBoots, cex=.6)
+```
+
+```{r}
+temp <- tre2
+N <- length(tre2$tip.label)
+toCollapse <- match(which(myBoots<70)+N, temp$edge[,2])
+temp$edge.length[toCollapse] <- 0
+tre3 <- di2multi(temp, tol=0.00001)
+plot(tre3, show.tip=FALSE, edge.width=2)
+title("NJ tree after collapsing weak nodes")
+tiplabels(tre3$tip.label, bg=transp(num2col(annot$year, col.pal=myPal),.7), cex=.5, fg="transparent")
+axisPhylo()
+temp <- pretty(1993:2008, 5)
+legend("topright", fill=transp(num2col(temp, col.pal=myPal),.7), leg=temp, ncol=2)
+```
+
+## Maximum Parismony 
+
+```{r}
+dna2 <- as.phyDat(dna)
+class(dna2)
+```
+
+
+```{r}
+dna2
+```
+
+
+```{r}
+tre.ini <- nj(dist.dna(dna,model="raw"))
+tre.ini
+```
+
+```{r}
+parsimony(tre.ini, dna2)
+```
+
+
+```{r}
+tre.pars <- optim.parsimony(tre.ini, dna2)
+```
+
+
+```{r}
+tre.pars
+```
+
+```{r}
+parsimony(tre.pars, dna2)
+```
+
+
+
+### This function takes a vector of color labels and makes them applicable to groups on the tree:
+
+```{r}
+myPal <- colorRampPalette(c("red","yellow","green","blue"))
+library(ape)
+plot(tre.pars, type="unr", show.tip=FALSE, edge.width=2)
+title("Maximum-parsimony tree")
+tiplabels(tre.pars$tip.label, bg=transp(num2col(annot$year, col.pal=myPal),.7), cex=.5, fg="transparent")
+temp <- pretty(1993:2008, 5)
+legend("bottomright", fill=transp(num2col(temp, col.pal=myPal),.7), leg=temp, ncol=2, bg=transp("white"))
+```
+
+## Maximum Likelihood- based
+
+```{r}
+tre.ini <- nj(dist.dna(dna,model="TN93"))
+```
+
+
+```{r}
+pml(tre.ini, dna2, k=4)
+```
+
+
+```{r}
+table(as.character(dna2))
+```
+
+
+```{r}
+na.posi <- which(apply(as.character(dna),2, function(e) any(!e %in% c("a","t","g","c"))))
+```
+
+
+```{r}
+temp <- apply(as.character(dna),2, function(e) sum(!e %in% c("a","t","g","c")))
+plot(temp, type="l", col="blue", xlab="Position in HA segment", ylab="Number of NAs")
+```
+
+
+```{r}
+dna3 <- dna[,-na.posi]
+```
+
+
+```{r}
+table(as.character(dna3))
+```
+
+```{r}
+dna4 <- as.phyDat(dna3)
+```
+
+```{r}
+tre.ini <- nj(dist.dna(dna3,model="TN93"))
+fit.ini <- pml(tre.ini, dna4, k=4)
+```
+
+```{r}
+fit.ini
+```
+
+```{r}
+fit <- optim.pml(fit.ini, optNni=TRUE, optBf=TRUE, optQ=TRUE, optGamma=TRUE)
+```
+
+```{r}
+fit
+```
+
+
+```{r}
+anova(fit.ini, fit)
+```
+
+```{r}
+AIC(fit.ini)
+```
+
+```{r}
+AIC(fit)
+
+```
+
+
+```{r}
+tre4 <- root(fit$tree,1)
+tre4 <- ladderize(tre4)
+plot(tre4, show.tip=FALSE, edge.width=2)
+title("Maximum-likelihood tree")
+tiplabels(annot$year, bg=transp(num2col(annot$year, col.pal=myPal),.7), cex=.5, fg="transparent")
+axisPhylo()
+temp <- pretty(1993:2008, 5)
+legend("topright", fill=transp(num2col(temp, col.pal=myPal),.7), leg=temp, ncol=2)
+
+```
+
+
+
